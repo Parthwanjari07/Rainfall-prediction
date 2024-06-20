@@ -78,15 +78,35 @@ if use_sample:
 
 
 
-#Train test split
+#Train test split (we wont be using this as there is the consideration of date and time)
 
-train_val_df, test_df = train_test_split(raw_df,test_size=0.2, random_state=42)
-train_df, val_df = train_test_split(train_val_df,test_size=0.25, random_state=42)
-
-
-print('train_df:', train_df.shape)
-print('test_df:', test_df.shape)
-print('val_df:', val_df.shape)
+#train_val_df, test_df = train_test_split(raw_df,test_size=0.2, random_state=42)
+#train_df, val_df = train_test_split(train_val_df,test_size=0.25, random_state=42)
 
 
+#print('train_df:', train_df.shape)
+#print('test_df:', test_df.shape)
+#print('val_df:', val_df.shape)
+
+plt.title('NO. of Rowa per year')
+sns.countplot(x=pd.to_datetime(raw_df.Date).dt.year);
+
+
+#plt.show()
+
+
+year = pd.to_datetime(raw_df.Date).dt.year
+
+train_df = raw_df[year < 2015]
+val_df = raw_df[year == 2015]
+test_df = raw_df[year > 2015]
+
+#print('train_df: \n', train_df)
+#print('test_df:\n', test_df)
+#print('val_df:', val_df)
+
+input_cols = list(train_df.columns)[1:-1]
+target_cols = 'RainTomorrow'
+
+print(input_cols)
 
