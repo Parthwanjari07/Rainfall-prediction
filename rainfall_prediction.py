@@ -6,6 +6,9 @@ import matplotlib
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.model_selection import train_test_split
+import numpy as np
+from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import MinMaxScaler
 
 
 
@@ -108,5 +111,58 @@ test_df = raw_df[year > 2015]
 input_cols = list(train_df.columns)[1:-1]
 target_cols = 'RainTomorrow'
 
-print(input_cols)
+#print(input_cols)
+
+train_inputs = train_df[input_cols].copy()
+train_targets =train_df[target_cols].copy()
+
+val_inputs = val_df[input_cols].copy()
+val_targets = val_df[target_cols].copy()
+
+test_inputs = test_df[input_cols].copy()
+test_targets =test_df[target_cols].copy()
+
+
+#seperating numeric and catogorical columns
+
+numeric_cols = train_inputs.select_dtypes(include= np.number).columns.tolist()
+categorical_cols = train_inputs.select_dtypes('object').columns.tolist()
+
+#print(numeric_cols)
+#print(categorical_cols)
+
+
+#Performing imputation i.e. filling NaN or missing values
+
+imputer = SimpleImputer(strategy='mean')
+
+#print(train_inputs[numeric_cols].isna().sum())
+
+imputer.fit(raw_df[numeric_cols])
+
+#print(list(imputer.statistics_))
+
+train_inputs[numeric_cols] = imputer.transform(train_inputs[numeric_cols])
+val_inputs[numeric_cols] = imputer.transform(val_inputs[numeric_cols])
+test_inputs[numeric_cols] = imputer.transform(test_inputs[numeric_cols])
+
+#print(train_inputs[numeric_cols].isna().sum())
+
+
+#scaling i.e. scaling the values from 0 to 1
+
+scaler = MinMaxScaler()
+
+scaler.fit(raw_df[numeric_cols]) # looks for minimum and maximum from the dataset
+
+#print(list(scaler.data_min_))
+#print(list(scaler.data_max_))
+
+train_inputs[numeric_cols] =  scaler.transform(train_inputs[numeric_cols])
+val_inputs[numeric_cols] =  scaler.transform(val_inputs[numeric_cols])
+test_inputs[numeric_cols] =  scaler.transform(test_inputs[numeric_cols])
+
+#print(train_inputs[numeric_cols].describe())
+
+#Encoding categorical data like location etc
 
