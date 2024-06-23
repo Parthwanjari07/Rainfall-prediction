@@ -10,6 +10,7 @@ import numpy as np
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import OneHotEncoder
+from sklearn.linear_model import LogisticRegression
 
 
 
@@ -181,6 +182,9 @@ pd.set_option('display.max_columns', None)
 
 #print(test_inputs)
 
+
+
+#saving datasets in parquet format
 train_inputs.to_parquet('train_inputs.parquet')
 val_inputs.to_parquet('val_inputs.parquet')
 test_inputs.to_parquet('test_inputs.parquet')
@@ -188,4 +192,13 @@ test_inputs.to_parquet('test_inputs.parquet')
 pd.DataFrame(train_targets).to_parquet('train_targets.parquet')
 pd.DataFrame(val_targets).to_parquet('val_targets.parquet')
 pd.DataFrame(test_targets).to_parquet('test_targets.parquet')
+
+
+
+#training logistic regression model
+
+model = LogisticRegression(solver='liblinear') #initiating
+
+model.fit(train_inputs[numeric_cols + encoded_cols], train_targets)#training
+
 
