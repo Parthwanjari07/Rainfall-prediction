@@ -9,6 +9,7 @@ from sklearn.model_selection import train_test_split
 import numpy as np
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import OneHotEncoder
 
 
 
@@ -165,4 +166,26 @@ test_inputs[numeric_cols] =  scaler.transform(test_inputs[numeric_cols])
 #print(train_inputs[numeric_cols].describe())
 
 #Encoding categorical data like location etc
+
+encoder = OneHotEncoder(sparse_output=False, handle_unknown='ignore')
+encoder.fit(raw_df[categorical_cols])
+#print(encoder.categories_)
+encoded_cols = list(encoder.get_feature_names_out(categorical_cols))
+#print(encoded_cols)
+
+train_inputs[encoded_cols] = encoder.transform(train_inputs[categorical_cols])
+val_inputs[encoded_cols] = encoder.transform(val_inputs[categorical_cols])
+test_inputs[encoded_cols] = encoder.transform(test_inputs[categorical_cols])
+
+pd.set_option('display.max_columns', None)
+
+#print(test_inputs)
+
+train_inputs.to_parquet('train_inputs.parquet')
+val_inputs.to_parquet('val_inputs.parquet')
+test_inputs.to_parquet('test_inputs.parquet')
+
+pd.DataFrame(train_targets).to_parquet('train_targets.parquet')
+pd.DataFrame(val_targets).to_parquet('val_targets.parquet')
+pd.DataFrame(test_targets).to_parquet('test_targets.parquet')
 
