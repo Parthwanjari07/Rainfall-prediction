@@ -11,6 +11,8 @@ from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
+from sklearn.metrics import confusion_matrix
 
 
 
@@ -199,6 +201,31 @@ pd.DataFrame(test_targets).to_parquet('test_targets.parquet')
 
 model = LogisticRegression(solver='liblinear') #initiating
 
-model.fit(train_inputs[numeric_cols + encoded_cols], train_targets)#training
+model.fit(train_inputs[numeric_cols + encoded_cols], train_targets)#trainingdauhdudhauhdhvhjghghjghjvbjhgjhtvmct    gcf
+
+#print(model.coef_.tolist())
+
+#print(model.intercept_)
+
+X_train = train_inputs[numeric_cols + encoded_cols]
+X_val = val_inputs[numeric_cols + encoded_cols]
+X_test = test_inputs[numeric_cols + encoded_cols]
+
+train_preds = model.predict(X_train)
+
+#print(train_preds)
+
+train_probs = model.predict_proba(X_train)# shows probability
+
+#print(pd.DataFrame(train_probs))
+
+#print(model.classes_)
+
+print(accuracy_score(train_targets, train_preds))# accuracy
+
+#confusion matrix
+
+confusion_matrix(train_targets, train_preds, normalize='true')
+
 
 
