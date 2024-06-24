@@ -221,11 +221,26 @@ train_probs = model.predict_proba(X_train)# shows probability
 
 #print(model.classes_)
 
-print(accuracy_score(train_targets, train_preds))# accuracy
+accuracy_score(train_targets, train_preds)# accuracy
 
 #confusion matrix
 
 confusion_matrix(train_targets, train_preds, normalize='true')
 
+def predict_plot(inputs, targets, name=''):
+    preds = model.predict(inputs)
 
+    accuracy = accuracy_score(targets, preds)
 
+    print(f'Accuracy:{accuracy*100:.2f}%' )
+    
+    cf = confusion_matrix(targets, preds, normalize='true')
+
+    plt.figure()
+    sns.heatmap(cf, annot=True)
+    plt.xlabel('predictions')
+    plt.ylabel('targets')
+    plt.title('{} confusion Matrix'.format(name))
+    plt.show()
+
+val_preds = predict_plot(X_val,val_targets,'validation' )
