@@ -13,7 +13,7 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
-
+import joblib
 
 
 dataset_url = 'https://www.kaggle.com/jsphyg/weather-dataset-rattle-package'
@@ -243,4 +243,82 @@ def predict_plot(inputs, targets, name=''):
     plt.title('{} confusion Matrix'.format(name))
     plt.show()
 
-val_preds = predict_plot(X_val,val_targets,'validation' )
+#val_preds = predict_plot(X_val,val_targets,'validation' )
+#test_preds = predict_plot(X_test,test_targets,'test')
+
+
+#testing the model against did=fferent models 
+
+def random_guess(inputs):
+    return np.random.choice(['No', 'yes'], len(inputs))
+
+def all_no(inputs):
+    return np.full(len(inputs) , 'No')
+
+#print(accuracy_score(val_targets, random_guess(X_val)))
+#print(accuracy_score(test_targets, all_no(X_test)))
+
+#hence concluded that our ml model is better than both random and all_no model
+
+#prediction for the single input
+
+
+def predict_input(single_inputs):
+    input_df = pd.DataFrame([single_inputs])
+    input_df[numeric_cols] = imputer.transform(input_df[numeric_cols])
+    input_df[numeric_cols]= scaler.transform(input_df[numeric_cols])
+    input_df[encoded_cols]  = encoder.transform(input_df[categorical_cols])
+    X_input = input_df[numeric_cols +encoded_cols]
+    pred = model.predict(X_input)[0]
+    prob = model.predict_proba(X_input)[0][list(model.classes_).index(pred)]
+    print({pred, prob})
+
+
+new_input = {'Date': '2021-06-19',
+             'Location': 'Katherine',
+             'MinTemp': 23.2,
+             'MaxTemp': 33.2,
+             'Rainfall': 10.2,
+             'Evaporation': 4.2,
+             'Sunshine': np.nan,
+             'WindGustDir': 'NNW',
+             'WindGustSpeed': 52.0,
+             'WindDir9am': 'NW',
+             'WindDir3pm': 'NNE',
+             'WindSpeed9am': 13.0,
+             'WindSpeed3pm': 20.0,
+             'Humidity9am': 89.0,
+             'Humidity3pm': 58.0,
+             'Pressure9am': 1004.8,
+             'Pressure3pm': 1001.5,
+             'Cloud9am': 8.0,
+             'Cloud3pm': 5.0,
+             'Temp9am': 25.7,
+             'Temp3pm': 33.0,
+             'RainToday': 'Yes'}
+
+
+#predict_input(new_input)
+
+
+
+#saving model using joblib
+
+aussie_rain = {
+    'model': model,
+    'imputer': imputer,
+    'scaler': scaler,
+    'encoder': encoder,
+    'input_cols': input_cols,
+    'target_col': target_cols,
+    'numeric_cols': numeric_cols,
+    'categorical_cols': categorical_cols,
+    'encoded_cols': encoded_cols
+}
+
+#joblib.dump(aussie_rain,'aussie_rain.joblib')
+
+aussie_rain2 = joblib.load('aussie_rain.joblib')
+
+test_preds2 = aussie_rain2['model'].predict(X_test)
+#print(accuracy_score(test_targets, test_preds2))
